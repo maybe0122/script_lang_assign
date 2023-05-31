@@ -1,8 +1,8 @@
 from tkinter import *
 from tkinter import font
 from winsound import *
-from poker_player import *
-from poker_card import *
+from Dori_player import *
+from Dori_card import *
 import random
 
 
