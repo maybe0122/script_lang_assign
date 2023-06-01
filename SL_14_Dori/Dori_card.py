@@ -1,14 +1,10 @@
 class Card:     # 클래스 Card
-    def __init__(self, number):         # 랜덤 넘버 number = 0..51 값 인자로 전달
-        self.x = number // 13           # 0..51 // 13 -> 0,1,2,3 무늬(suit)
-        self.value = number % 13 + 1    # 1,2,...13 (13가지 숫자)
+    def __init__(self, number):         # 랜덤 넘버 number = 0..39 값 인자로 전달
+        self.month = number // 4 + 1          # 1,...,10 -> 월
+        self.num = number % 4 + 1    # 1, 2, 3, 4 (한 월에 있는 4가지 무늬의 같은 카드를 숫자로 구분)
 
-    def getsuit(self):          # self.x 에 따라서 카드 무늬를 반환하는 함수
-        suits = ['Clubs', 'Spades', 'Hearts', 'Diamonds']  # 카드 무늬 리스트
-        return suits[self.x]    # 4 문자열 중에서 self.x 문자열 반환
+    def filename(self):         # 랜덤 넘버 number =0..39 에서 file name 반환
+        return str(self.month)+"."+str(self.num)+'.gif'
 
-    def filename(self):         # 랜덤 넘버 number =0..51 에서 file name 반환
-        return self.getsuit()+str(self.value)+'.png'
-
-    def getValue(self):         # 1,2,3,4,5,6,7,8,9,10, J,Q,K -> 11, 12, 13
-        return self.value
+    def getMonth(self):         # 1,2,3,4,5,6,7,8,9,10 월
+        return self.month

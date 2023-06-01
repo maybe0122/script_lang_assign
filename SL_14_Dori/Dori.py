@@ -6,41 +6,61 @@ from Dori_card import *
 import random
 
 
-class BlackJack:
+class Dori:
     def __init__(self):
         self.window = Tk()
-        self.window.title("Texas Holdem Poker")
+        self.window.title("도리짓고땡")
         self.window.geometry("800x600")
         self.window.configure(bg="green")
-        self.fontstyle = font.Font(self.window, size=24, weight='bold', family='Consolas')
-        self.fontstyle2 = font.Font(self.window, size=16, weight='bold', family='Consolas')
+        self.fontstyle = font.Font(self.window, size=12, weight='normal', family='Consolas')
+        self.fontstyle2 = font.Font(self.window, size=16, weight='normal', family='Consolas')
+        self.fontstyle3 = font.Font(self.window, size=24, weight='normal', family='Consolas')
+        self.player1 = Player("player1")
+        self.player2 = Player("player2")
+        self.player3 = Player("player3")
+        self.dealer = Player("dealer")
+        self.P1betMoney = 0
+        self.P2betMoney = 0
+        self.P3betMoney = 0
+        self.totalMoney = 1000
+        self.nCardsDealer = 0
+        self.nCardsPlayer1 = 0
+        self.nCardsPlayer2 = 0
+        self.nCardsPlayer3 = 0
+        self.LcardsPlayer1 = []
+        self.LcardsPlayer2 = []
+        self.LcardsPlayer3 = []
+        self.LcardsDealer = []
+        self.deckN = 0
+        self.deal1 = False
+        self.deal2 = False
+        self.deal3 = False
         self.setupButton()
         self.setupLabel()
-        self.player = Player("player")
-        self.dealer = Player("dealer")
-        self.middle = Player("middle")
-        self.betMoney = 10
-        self.playerMoney = 990
-        self.nCardsDealer = 0
-        self.nCardsPlayer = 0
-        self.nCardsMiddle = 0
-        self.LcardsPlayer = []
-        self.LcardsDealer = []
-        self.LcardsMiddle = []
-        self.deckN = 0
         self.window.mainloop()
 
     def setupButton(self):
-        self.Check = Button(self.window, text="Check", width=6, height=1, font=self.fontstyle2, command=self.pressedCheck)
-        self.Check.place(x=50, y=500)
-        self.Bx1 = Button(self.window, text="Bet x1", width=6, height=1, font=self.fontstyle2, command=self.pressedBx1)
-        self.Bx1.place(x=150, y=500)
-        self.Bx2 = Button(self.window, text="Bet x2", width=6, height=1, font=self.fontstyle2, command=self.pressedBx2)
-        self.Bx2.place(x=250, y=500)
-        self.Deal = Button(self.window, text="Deal", width=6, height=1, font=self.fontstyle2, command=self.pressedDeal)
-        self.Deal.place(x=600, y=500)
-        self.Again = Button(self.window, text="Again", width=6, height=1, font=self.fontstyle2, command=self.pressedAgain)
-        self.Again.place(x=700, y=500)
+        x = 50
+        y = 550
+        self.P1Bet5 = Button(self.window, text="5만", width=4, height=1, font=self.fontstyle2, command=self.pressedP1Bet5)
+        self.P1Bet5.place(x=x, y=y)
+        self.P1Bet1 = Button(self.window, text="1만", width=4, height=1, font=self.fontstyle2, command=self.pressedP1Bet1)
+        self.P1Bet1.place(x=x+80, y=y)
+
+        self.P2Bet5 = Button(self.window, text="5만", width=4, height=1, font=self.fontstyle2, command=self.pressedP2Bet5)
+        self.P2Bet5.place(x=x+200, y=y)
+        self.P2Bet1 = Button(self.window, text="1만", width=4, height=1, font=self.fontstyle2, command=self.pressedP2Bet1)
+        self.P2Bet1.place(x=x+280, y=y)
+
+        self.P3Bet5 = Button(self.window, text="5만", width=4, height=1, font=self.fontstyle2, command=self.pressedP3Bet5)
+        self.P3Bet5.place(x=x+400, y=y)
+        self.P3Bet1 = Button(self.window, text="1만", width=4, height=1, font=self.fontstyle2, command=self.pressedP3Bet1)
+        self.P3Bet1.place(x=x+480, y=y)
+
+        self.Deal = Button(self.window, text="Deal", width=5, height=1, font=self.fontstyle2, command=self.pressedDeal)
+        self.Deal.place(x=620, y=y)
+        self.Again = Button(self.window, text="Again", width=5, height=1, font=self.fontstyle2, command=self.pressedAgain)
+        self.Again.place(x=700, y=y)
 
         self.Deal['state'] = 'disabled'
         self.Deal['bg'] = 'gray'
@@ -49,16 +69,86 @@ class BlackJack:
 
     # text 위치 수정
     def setupLabel(self):
-        self.LbetMoney = Label(text="$10", width=4, height=1, font=self.fontstyle, bg="green", fg="yellow")
-        self.LbetMoney.place(x=200, y=450)
-        self.LplayerMoney = Label(text="You have $990", width=15, height=1, font=self.fontstyle, bg="green", fg="yellow")
-        self.LplayerMoney.place(x=500, y=450)
-        self.LplayerMade = Label(text="", width=12, height=1, font=self.fontstyle, bg="green", fg="cyan")
+        # money label
+        self.LP1betMoney = Label(text=str(self.P1betMoney)+"만", width=4, height=1, font=self.fontstyle3, bg="green", fg="cyan")
+        self.LP1betMoney.place(x=100, y=500)
+
+        self.LP2betMoney = Label(text=str(self.P2betMoney)+"만", width=4, height=1, font=self.fontstyle3, bg="green", fg="cyan")
+        self.LP2betMoney.place(x=300, y=500)
+
+        self.LP3betMoney = Label(text=str(self.P2betMoney)+"만", width=4, height=1, font=self.fontstyle3, bg="green", fg="cyan")
+        self.LP3betMoney.place(x=500, y=500)
+
+        self.LplayerMoney = Label(text=str(self.totalMoney)+"만원", width=10, height=1, font=self.fontstyle3, bg="green", fg="blue")
+        self.LplayerMoney.place(x=620, y=450)
+
+        # made label
+        # self.LplayerMade = Label(text="test", width=12, height=1, font=self.fontstyle, bg="green", fg="cyan")
+        # self.LplayerMade.place(x=250, y=400)
+        #
+        # self.LplayerMade = Label(text="test", width=12, height=1, font=self.fontstyle, bg="green", fg="cyan")
+        # self.LplayerMade.place(x=250, y=400)
+        #
+        # self.LplayerMade = Label(text="test", width=12, height=1, font=self.fontstyle, bg="green", fg="cyan")
+        # self.LplayerMade.place(x=250, y=400)
+        #
+        # self.LdealerMade = Label(text="test", width=12, height=1, font=self.fontstyle, bg="green", fg="cyan")
+        # self.LdealerMade.place(x=250, y=100)
+
+        # number label
+        self.LplayerMade = Label(text="test", width=12, height=1, font=self.fontstyle, bg="green", fg="cyan")
         self.LplayerMade.place(x=250, y=400)
-        self.LdealerMade = Label(text="", width=12, height=1, font=self.fontstyle, bg="green", fg="cyan")
-        self.LdealerMade.place(x=250, y=100)
-        self.Lstatus = Label(text="", width=12, height=1, font=self.fontstyle, bg="green", fg="red")
-        self.Lstatus.place(x=500, y=350)
+
+        self.LplayerMade = Label(text="test", width=12, height=1, font=self.fontstyle, bg="green", fg="cyan")
+        self.LplayerMade.place(x=250, y=400)
+
+        self.LplayerMade = Label(text="test", width=12, height=1, font=self.fontstyle, bg="green", fg="cyan")
+        self.LplayerMade.place(x=250, y=400)
+
+        # win/lose label
+        # self.LP1status = Label(text="test", width=12, height=1, font=self.fontstyle, bg="green", fg="red")
+        # self.LP1status.place(x=500, y=350)
+        #
+        # self.LP2status = Label(text="test", width=12, height=1, font=self.fontstyle, bg="green", fg="red")
+        # self.LP2status.place(x=500, y=350)
+        #
+        # self.LP3status = Label(text="test", width=12, height=1, font=self.fontstyle, bg="green", fg="red")
+        # self.LP3status.place(x=500, y=350)
+
+        self.player1.reset()
+        self.player2.reset()
+        self.player3.reset()
+        self.dealer.reset()
+
+        # 카드 덱 40장 셔플링 0,1,,.39
+        self.cardDeck = [i for i in range(40)]
+        random.shuffle(self.cardDeck)
+        self.deckN = 0
+
+        for i in range(5):
+            self.hitPlayer1(i)
+            self.hitPlayer2(i)
+            self.hitPlayer3(i)
+            self.hitDealer(i)
+        # self.hitPlayer1(1)
+
+    def pressedP1Bet5(self):
+        pass
+
+    def pressedP1Bet1(self):
+        pass
+
+    def pressedP2Bet5(self):
+        pass
+
+    def pressedP2Bet1(self):
+        pass
+
+    def pressedP3Bet5(self):
+        pass
+
+    def pressedP3Bet1(self):
+        pass
 
     def pressedCheck(self):
         self.LbetMoney.configure(text="$" + str(self.betMoney))
@@ -109,18 +199,20 @@ class BlackJack:
             self.checkWinner()
 
     def init_deal(self):
-        self.player.reset()
+        self.player1.reset()
+        self.player2.reset()
+        self.player3.reset()
         self.dealer.reset()
-        self.middle.reset()
 
-        # 카드 덱 52장 셔플링 0,1,,.51
-        self.cardDeck = [i for i in range(52)]
+        # 카드 덱 40장 셔플링 0,1,,.39
+        self.cardDeck = [i for i in range(40)]
         random.shuffle(self.cardDeck)
         self.deckN = 0
 
-        for i in range(2):
-            self.hitPlayer(i)
-            self.hitDealer(i)
+        self.hitPlayer1(0)
+        self.hitPlayer2(0)
+        self.hitPlayer3(0)
+        self.hitDealer(0)
 
         for i in range(3):
             self.hitMiddle(i)
@@ -145,44 +237,72 @@ class BlackJack:
         # self.LplayerMade.configure(text=str(self.player.value()))
         PlaySound('../sounds/cardFlip1.wav', SND_FILENAME)
 
+    def hitPlayer1(self, n):
+        newCard = Card(self.cardDeck[self.deckN])
+        self.deckN += 1
+        self.player1.addCard(newCard)
+        p = PhotoImage(file="../GodoriCards/" + newCard.filename())
+        self.LcardsPlayer1.append(Label(self.window, image=p))
+
+        # 파이썬은 라벨 이미지 레퍼런스를 갖고 있어야 이미지가 보임
+        self.LcardsPlayer1[self.player1.inHand() - 1].image = p
+
+        self.LcardsPlayer1[self.player1.inHand() - 1].place(x=50 + n * 30, y=350)
+
+        # test 용도
+        # self.LplayerMade.configure(text=str(self.player.value()))
+        # PlaySound('../sounds/cardFlip1.wav', SND_FILENAME)
+
+    def hitPlayer2(self, n):
+        newCard = Card(self.cardDeck[self.deckN])
+        self.deckN += 1
+        self.player2.addCard(newCard)
+        p = PhotoImage(file="../GodoriCards/" + newCard.filename())
+        self.LcardsPlayer2.append(Label(self.window, image=p))
+
+        # 파이썬은 라벨 이미지 레퍼런스를 갖고 있어야 이미지가 보임
+        self.LcardsPlayer2[self.player2.inHand() - 1].image = p
+
+        self.LcardsPlayer2[self.player2.inHand() - 1].place(x=250 + n * 30, y=350)
+
+        # test 용도
+        # self.LplayerMade.configure(text=str(self.player.value()))
+        # PlaySound('../sounds/cardFlip1.wav', SND_FILENAME)
+
+    def hitPlayer3(self, n):
+        newCard = Card(self.cardDeck[self.deckN])
+        self.deckN += 1
+        self.player3.addCard(newCard)
+        p = PhotoImage(file="../GodoriCards/" + newCard.filename())
+        self.LcardsPlayer3.append(Label(self.window, image=p))
+
+        # 파이썬은 라벨 이미지 레퍼런스를 갖고 있어야 이미지가 보임
+        self.LcardsPlayer3[self.player3.inHand() - 1].image = p
+
+        self.LcardsPlayer3[self.player3.inHand() - 1].place(x=450 + n * 30, y=350)
+
+        # test 용도
+        # self.LplayerMade.configure(text=str(self.player.value()))
+        # PlaySound('../sounds/cardFlip1.wav', SND_FILENAME)
+
     def hitDealer(self, n):                 # 수정 o
         newCard = Card(self.cardDeck[self.deckN])
 
         self.deckN += 1
         self.dealer.addCard(newCard)
-        p = PhotoImage(file="../cards/b2fv.png")
+        p = PhotoImage(file="../GodoriCards/cardback.gif")
         self.LcardsDealer.append(Label(self.window, image=p))
 
         # 파이썬은 라벨 이미지 레퍼런스를 갖고 있어야 이미지가 보임
         self.LcardsDealer[self.dealer.inHand() - 1].image = p
 
-        self.LcardsDealer[self.dealer.inHand() - 1].place(x=50 + n * 90, y=50)
+        self.LcardsDealer[self.dealer.inHand() - 1].place(x=250 + n * 30, y=100)
 
-        # test 용도
-        # self.LdealerMade.configure(text=str(self.dealer.value()))
 
-        PlaySound('../sounds/cardFlip1.wav', SND_FILENAME)
+        # PlaySound('../sounds/cardFlip1.wav', SND_FILENAME)
 
-        self.Deal['state'] = 'disabled'
-        self.Deal['bg'] = 'gray'
-
-    def hitMiddle(self, n):
-        newCard = Card(self.cardDeck[self.deckN])
-
-        self.deckN += 1
-        self.middle.addCard(newCard)
-        p = PhotoImage(file="../cards/" + newCard.filename())
-        self.LcardsMiddle.append(Label(self.window, image=p))
-
-        # 파이썬은 라벨 이미지 레퍼런스를 갖고 있어야 이미지가 보임
-        self.LcardsMiddle[self.middle.inHand() - 1].image = p
-
-        self.LcardsMiddle[self.middle.inHand() - 1].place(x=150 + n * 90, y=200)
-
-        PlaySound('../sounds/cardFlip1.wav', SND_FILENAME)
-
-        self.Deal['state'] = 'disabled'
-        self.Deal['bg'] = 'gray'
+        # self.Deal['state'] = 'disabled'
+        # self.Deal['bg'] = 'gray'
 
     def pressedDeal(self):      # 수정 o
         if self.deckN == 0:
@@ -246,7 +366,7 @@ class BlackJack:
 
         playerhigh = pedigree[player_ped[0]]    # 족보 int
         dealerhigh = pedigree[dealer_ped[0]]    # 족보 int
-        
+
         # dictionary 만들어서 족보별 우선순위 만들기
         print(playerhigh, dealerhigh)
 
@@ -350,4 +470,4 @@ class BlackJack:
         self.Lstatus.configure(text="Push")
         PlaySound('../sounds/win.wav', SND_FILENAME)
 
-BlackJack()
+Dori()
