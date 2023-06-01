@@ -5,6 +5,8 @@ from player import *
 from dice import *
 from configuration import *
 
+# 종료조건 날아가버림.. 미완성
+
 class YahtzeeBoard:
     UPPERTOTAL = 6      # UpperScore 범주 인덱스
     UPPERBONUS = 7      # UpperBonus 범주 인덱스
@@ -59,7 +61,6 @@ class YahtzeeBoard:
         self.window.geometry('1600x800')
         self.TempFont = font.Font(size=16, weight='bold', family='Consolas')
 
-        print('tlqkf')
         for i in range(5):  # Dice 객체 5개 생성
             self.dice.append(Dice())
 
