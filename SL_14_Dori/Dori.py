@@ -12,29 +12,18 @@ class Dori:
         self.window.title("도리짓고땡")
         self.window.geometry("800x600")
         self.window.configure(bg="green")
-        self.fontstyle = font.Font(self.window, size=12, weight='normal', family='Consolas')
+        self.fontstyle = font.Font(self.window, size=14, weight='bold', family='Consolas')
         self.fontstyle2 = font.Font(self.window, size=16, weight='normal', family='Consolas')
-        self.fontstyle3 = font.Font(self.window, size=24, weight='normal', family='Consolas')
-        self.player1 = Player("player1")
-        self.player2 = Player("player2")
-        self.player3 = Player("player3")
+        self.fontstyle3 = font.Font(self.window, size=24, weight='bold', family='맑은 고딕')
+        self.fontstyle4 = font.Font(self.window, size=12, weight='bold', family='맑은 고딕')
+        self.player = [Player("player1"), Player("player2"), Player("player3")]
         self.dealer = Player("dealer")
-        self.P1betMoney = 0
-        self.P2betMoney = 0
-        self.P3betMoney = 0
+        self.playerbetMoney = [0, 0, 0]
         self.totalMoney = 1000
-        self.nCardsDealer = 0
-        self.nCardsPlayer1 = 0
-        self.nCardsPlayer2 = 0
-        self.nCardsPlayer3 = 0
-        self.LcardsPlayer1 = []
-        self.LcardsPlayer2 = []
-        self.LcardsPlayer3 = []
+        self.LcardsPlayer = [[], [], []]      # 플레이어 카드 정보 (0, 1, 2) + 1 == 플레이어
         self.LcardsDealer = []
         self.deckN = 0
-        self.deal1 = False
-        self.deal2 = False
-        self.deal3 = False
+        self.deal = [False, False, False]   # 배팅 여부 확인
         self.setupButton()
         self.setupLabel()
         self.window.mainloop()
@@ -70,138 +59,153 @@ class Dori:
     # text 위치 수정
     def setupLabel(self):
         # money label
-        self.LP1betMoney = Label(text=str(self.P1betMoney)+"만", width=4, height=1, font=self.fontstyle3, bg="green", fg="cyan")
-        self.LP1betMoney.place(x=100, y=500)
+        self.LplayerbetMoney = []
+        for i in range(3):
+            self.LplayerbetMoney.append(Label(text=str(self.playerbetMoney[i])+"만", width=4, height=1, font=self.fontstyle3, bg="green", fg="cyan"))
+            self.LplayerbetMoney[i].place(x=100 + i * 200, y=490)
 
-        self.LP2betMoney = Label(text=str(self.P2betMoney)+"만", width=4, height=1, font=self.fontstyle3, bg="green", fg="cyan")
-        self.LP2betMoney.place(x=300, y=500)
-
-        self.LP3betMoney = Label(text=str(self.P2betMoney)+"만", width=4, height=1, font=self.fontstyle3, bg="green", fg="cyan")
-        self.LP3betMoney.place(x=500, y=500)
-
-        self.LplayerMoney = Label(text=str(self.totalMoney)+"만원", width=10, height=1, font=self.fontstyle3, bg="green", fg="blue")
-        self.LplayerMoney.place(x=620, y=450)
+        self.LtotalMoney = Label(text=str(self.totalMoney)+"만원", width=10, height=1, font=self.fontstyle3, bg="green", fg="blue")
+        self.LtotalMoney.place(x=620, y=450)
 
         # made label
-        # self.LplayerMade = Label(text="test", width=12, height=1, font=self.fontstyle, bg="green", fg="cyan")
-        # self.LplayerMade.place(x=250, y=400)
-        #
-        # self.LplayerMade = Label(text="test", width=12, height=1, font=self.fontstyle, bg="green", fg="cyan")
-        # self.LplayerMade.place(x=250, y=400)
-        #
-        # self.LplayerMade = Label(text="test", width=12, height=1, font=self.fontstyle, bg="green", fg="cyan")
-        # self.LplayerMade.place(x=250, y=400)
-        #
-        # self.LdealerMade = Label(text="test", width=12, height=1, font=self.fontstyle, bg="green", fg="cyan")
-        # self.LdealerMade.place(x=250, y=100)
+        self.LplayerMade = []
+        for i in range(3):
+            self.LplayerMade.append(Label(text="", width=20, height=1, font=self.fontstyle4, bg="green", fg="cyan"))
+            self.LplayerMade[i].place(x=40 + i * 200, y=290)
+
+        self.LdealerMade = Label(text="", width=20, height=1, font=self.fontstyle4, bg="green", fg="cyan")
+        self.LdealerMade.place(x=240, y=40)
 
         # number label
-        self.LplayerMade = Label(text="test", width=12, height=1, font=self.fontstyle, bg="green", fg="cyan")
-        self.LplayerMade.place(x=250, y=400)
+        self.Lplayer1Num = []
+        for i in range(5):
+            self.Lplayer1Num.append(Label(text="", width=2, height=1, font=self.fontstyle, bg="green", fg="white"))
+            self.Lplayer1Num[i].place(x=70 + i * 30, y=320)
 
-        self.LplayerMade = Label(text="test", width=12, height=1, font=self.fontstyle, bg="green", fg="cyan")
-        self.LplayerMade.place(x=250, y=400)
+        self.Lplayer2Num = []
+        for i in range(5):
+            self.Lplayer2Num.append(Label(text="", width=2, height=1, font=self.fontstyle, bg="green", fg="white"))
+            self.Lplayer2Num[i].place(x=270 + i * 30, y=320)
 
-        self.LplayerMade = Label(text="test", width=12, height=1, font=self.fontstyle, bg="green", fg="cyan")
-        self.LplayerMade.place(x=250, y=400)
+        self.Lplayer3Num = []
+        for i in range(5):
+            self.Lplayer3Num.append(Label(text="", width=2, height=1, font=self.fontstyle, bg="green", fg="white"))
+            self.Lplayer3Num[i].place(x=470 + i * 30, y=320)
+
+        self.LdealerNum = []
+        for i in range(5):
+            self.LdealerNum.append(Label(text="", width=2, height=1, font=self.fontstyle, bg="green", fg="white"))
+            self.LdealerNum[i].place(x=270 + i * 30, y=70)
 
         # win/lose label
-        # self.LP1status = Label(text="test", width=12, height=1, font=self.fontstyle, bg="green", fg="red")
-        # self.LP1status.place(x=500, y=350)
-        #
-        # self.LP2status = Label(text="test", width=12, height=1, font=self.fontstyle, bg="green", fg="red")
-        # self.LP2status.place(x=500, y=350)
-        #
-        # self.LP3status = Label(text="test", width=12, height=1, font=self.fontstyle, bg="green", fg="red")
-        # self.LP3status.place(x=500, y=350)
+        self.Lplayerstatus = []
+        for i in range(3):
+            self.Lplayerstatus.append(Label(text="", width=4, height=1, font=self.fontstyle3, bg="green", fg="red"))
+            self.Lplayerstatus[i].place(x=50 + i * 200, y=230)
 
-        self.player1.reset()
-        self.player2.reset()
-        self.player3.reset()
-        self.dealer.reset()
-
-        # 카드 덱 40장 셔플링 0,1,,.39
-        self.cardDeck = [i for i in range(40)]
-        random.shuffle(self.cardDeck)
-        self.deckN = 0
-
-        for i in range(5):
-            self.hitPlayer1(i)
-            self.hitPlayer2(i)
-            self.hitPlayer3(i)
-            self.hitDealer(i)
-        # self.hitPlayer1(1)
+    def checkBet(self):
+        if self.deckN == 0:
+            if False not in self.deal:
+                self.Deal["state"] = "active"
+                self.Deal["bg"] = "white"
+        else:
+            if True in self.deal:
+                self.Deal["state"] = "active"
+                self.Deal["bg"] = "white"
 
     def pressedP1Bet5(self):
-        pass
+        temp = 5
+        self.playerbetMoney[0] += temp
+        if self.totalMoney >= temp:
+            self.LplayerbetMoney[0].configure(text=str(self.playerbetMoney[0])+"만")
+            self.totalMoney -= temp
+            self.LtotalMoney.configure(text=str(self.totalMoney) + "만")
+            # PlaySound('../sounds/chip.wav', SND_FILENAME)
+        else:
+            self.playerbetMoney[0] -= temp
+
+        self.deal[0] = True
+
+        self.checkBet()
 
     def pressedP1Bet1(self):
-        pass
+        temp = 1
+        self.playerbetMoney[0] += temp
+        if self.totalMoney >= temp:
+            self.LplayerbetMoney[0].configure(text=str(self.playerbetMoney[0]) + "만")
+            self.totalMoney -= temp
+            self.LtotalMoney.configure(text=str(self.totalMoney) + "만")
+            # PlaySound('../sounds/chip.wav', SND_FILENAME)
+        else:
+            self.playerbetMoney[0] -= temp
+
+        self.deal[0] = True
+
+        self.checkBet()
 
     def pressedP2Bet5(self):
-        pass
+        temp = 5
+        self.playerbetMoney[1] += temp
+        if self.totalMoney >= temp:
+            self.LplayerbetMoney[1].configure(text=str(self.playerbetMoney[1]) + "만")
+            self.totalMoney -= temp
+            self.LtotalMoney.configure(text=str(self.totalMoney) + "만")
+            # PlaySound('../sounds/chip.wav', SND_FILENAME)
+        else:
+            self.playerbetMoney[1] -= temp
+
+        self.deal[1] = True
+
+        self.checkBet()
 
     def pressedP2Bet1(self):
-        pass
+        temp = 1
+        self.playerbetMoney[1] += temp
+        if self.totalMoney >= temp:
+            self.LplayerbetMoney[1].configure(text=str(self.playerbetMoney[1]) + "만")
+            self.totalMoney -= temp
+            self.LtotalMoney.configure(text=str(self.totalMoney) + "만")
+            # PlaySound('../sounds/chip.wav', SND_FILENAME)
+        else:
+            self.playerbetMoney[1] -= temp
+
+        self.deal[1] = True
+
+        self.checkBet()
 
     def pressedP3Bet5(self):
-        pass
+        temp = 5
+        self.playerbetMoney[2] += temp
+        if self.totalMoney >= temp:
+            self.LplayerbetMoney[2].configure(text=str(self.playerbetMoney[2]) + "만")
+            self.totalMoney -= temp
+            self.LtotalMoney.configure(text=str(self.totalMoney) + "만")
+            # PlaySound('../sounds/chip.wav', SND_FILENAME)
+        else:
+            self.playerbetMoney[2] -= temp
+
+        self.deal[2] = True
+
+        self.checkBet()
 
     def pressedP3Bet1(self):
-        pass
-
-    def pressedCheck(self):
-        self.LbetMoney.configure(text="$" + str(self.betMoney))
-        self.LplayerMoney.configure(text="You have $" + str(self.playerMoney))
-        self.Deal["state"] = "active"
-        self.Deal["bg"] = "white"
-        PlaySound('../sounds/chip.wav', SND_FILENAME)
-
-        if self.deckN == 9:
-            self.Deal["state"] = "disabled"
-            self.Deal["bg"] = "gray"
-            self.checkWinner()
-
-    def pressedBx1(self):   # 수정 o
-        temp = self.betMoney
-        self.betMoney += temp
-        if self.playerMoney >= temp:
-            self.LbetMoney.configure(text="$" + str(self.betMoney))
-            self.playerMoney -= temp
-            self.LplayerMoney.configure(text="You have $" + str(self.playerMoney))
-            self.Deal["state"] = "active"
-            self.Deal["bg"] = "white"
-            PlaySound('../sounds/chip.wav', SND_FILENAME)
+        temp = 1
+        self.playerbetMoney[2] += temp
+        if self.totalMoney >= temp:
+            self.LplayerbetMoney[2].configure(text=str(self.playerbetMoney[2]) + "만")
+            self.totalMoney -= temp
+            self.LtotalMoney.configure(text=str(self.totalMoney) + "만")
+            # PlaySound('../sounds/chip.wav', SND_FILENAME)
         else:
-            self.betMoney -= temp
+            self.playerbetMoney[2] -= temp
 
-        if self.deckN == 9:
-            self.Deal["state"] = "disabled"
-            self.Deal["bg"] = "gray"
-            self.checkWinner()
+        self.deal[2] = True
 
-    def pressedBx2(self):    # 수정 o
-        temp = self.betMoney * 2
-        self.betMoney += temp
-        if self.playerMoney >= temp:
-            self.LbetMoney.configure(text="$" + str(self.betMoney))
-            self.playerMoney -= temp
-            self.LplayerMoney.configure(text="You have $" + str(self.playerMoney))
-            self.Deal["state"] = "active"
-            self.Deal["bg"] = "white"
-            PlaySound('../sounds/chip.wav', SND_FILENAME)
-        else:
-            self.betMoney -= temp
-
-        if self.deckN == 9:
-            self.Deal["state"] = "disabled"
-            self.Deal["bg"] = "gray"
-            self.checkWinner()
+        self.checkBet()
 
     def init_deal(self):
-        self.player1.reset()
-        self.player2.reset()
-        self.player3.reset()
+        for i in range(3):
+            self.player[i].reset()
         self.dealer.reset()
 
         # 카드 덱 40장 셔플링 0,1,,.39
@@ -214,75 +218,52 @@ class Dori:
         self.hitPlayer3(0)
         self.hitDealer(0)
 
-        for i in range(3):
-            self.hitMiddle(i)
-
-        self.nCardsPlayer = 1
-        self.nCardsDealer = 1
-        self.nCardsMiddle = 2
-
-    def hitPlayer(self, n):
-        newCard = Card(self.cardDeck[self.deckN])
-        self.deckN += 1
-        self.player.addCard(newCard)
-        p = PhotoImage(file="../cards/" + newCard.filename())
-        self.LcardsPlayer.append(Label(self.window, image=p))
-
-        # 파이썬은 라벨 이미지 레퍼런스를 갖고 있어야 이미지가 보임
-        self.LcardsPlayer[self.player.inHand() - 1].image = p
-
-        self.LcardsPlayer[self.player.inHand() - 1].place(x=50 + n * 90, y=350)
-
-        # test 용도
-        # self.LplayerMade.configure(text=str(self.player.value()))
-        PlaySound('../sounds/cardFlip1.wav', SND_FILENAME)
-
     def hitPlayer1(self, n):
         newCard = Card(self.cardDeck[self.deckN])
         self.deckN += 1
-        self.player1.addCard(newCard)
+        self.player[0].addCard(newCard)
         p = PhotoImage(file="../GodoriCards/" + newCard.filename())
-        self.LcardsPlayer1.append(Label(self.window, image=p))
+        self.LcardsPlayer[0].append(Label(self.window, image=p))
 
         # 파이썬은 라벨 이미지 레퍼런스를 갖고 있어야 이미지가 보임
-        self.LcardsPlayer1[self.player1.inHand() - 1].image = p
+        self.LcardsPlayer[0][self.player[0].inHand() - 1].image = p
 
-        self.LcardsPlayer1[self.player1.inHand() - 1].place(x=50 + n * 30, y=350)
+        self.LcardsPlayer[0][self.player[0].inHand() - 1].place(x=50 + n * 30, y=350)
 
-        # test 용도
-        # self.LplayerMade.configure(text=str(self.player.value()))
+        self.Lplayer1Num[n].configure(text=str(newCard.month))
+
         # PlaySound('../sounds/cardFlip1.wav', SND_FILENAME)
 
     def hitPlayer2(self, n):
         newCard = Card(self.cardDeck[self.deckN])
         self.deckN += 1
-        self.player2.addCard(newCard)
+        self.player[1].addCard(newCard)
         p = PhotoImage(file="../GodoriCards/" + newCard.filename())
-        self.LcardsPlayer2.append(Label(self.window, image=p))
+        self.LcardsPlayer[1].append(Label(self.window, image=p))
 
         # 파이썬은 라벨 이미지 레퍼런스를 갖고 있어야 이미지가 보임
-        self.LcardsPlayer2[self.player2.inHand() - 1].image = p
+        self.LcardsPlayer[1][self.player[1].inHand() - 1].image = p
 
-        self.LcardsPlayer2[self.player2.inHand() - 1].place(x=250 + n * 30, y=350)
+        self.LcardsPlayer[1][self.player[1].inHand() - 1].place(x=250 + n * 30, y=350)
 
-        # test 용도
-        # self.LplayerMade.configure(text=str(self.player.value()))
+        self.Lplayer2Num[n].configure(text=str(newCard.month))
+
         # PlaySound('../sounds/cardFlip1.wav', SND_FILENAME)
 
     def hitPlayer3(self, n):
         newCard = Card(self.cardDeck[self.deckN])
         self.deckN += 1
-        self.player3.addCard(newCard)
+        self.player[2].addCard(newCard)
         p = PhotoImage(file="../GodoriCards/" + newCard.filename())
-        self.LcardsPlayer3.append(Label(self.window, image=p))
+        self.LcardsPlayer[2].append(Label(self.window, image=p))
 
         # 파이썬은 라벨 이미지 레퍼런스를 갖고 있어야 이미지가 보임
-        self.LcardsPlayer3[self.player3.inHand() - 1].image = p
+        self.LcardsPlayer[2][self.player[2].inHand() - 1].image = p
 
-        self.LcardsPlayer3[self.player3.inHand() - 1].place(x=450 + n * 30, y=350)
+        self.LcardsPlayer[2][self.player[2].inHand() - 1].place(x=450 + n * 30, y=350)
 
-        # test 용도
-        # self.LplayerMade.configure(text=str(self.player.value()))
+        self.Lplayer3Num[n].configure(text=str(newCard.month))
+
         # PlaySound('../sounds/cardFlip1.wav', SND_FILENAME)
 
     def hitDealer(self, n):                 # 수정 o
@@ -290,7 +271,9 @@ class Dori:
 
         self.deckN += 1
         self.dealer.addCard(newCard)
-        p = PhotoImage(file="../GodoriCards/cardback.gif")
+        # test
+        p = PhotoImage(file="../GodoriCards/" + newCard.filename())
+        # p = PhotoImage(file="../GodoriCards/cardback.gif")
         self.LcardsDealer.append(Label(self.window, image=p))
 
         # 파이썬은 라벨 이미지 레퍼런스를 갖고 있어야 이미지가 보임
@@ -298,19 +281,34 @@ class Dori:
 
         self.LcardsDealer[self.dealer.inHand() - 1].place(x=250 + n * 30, y=100)
 
+        self.LdealerNum[n].configure(text=str(newCard.month))
 
         # PlaySound('../sounds/cardFlip1.wav', SND_FILENAME)
 
-        # self.Deal['state'] = 'disabled'
-        # self.Deal['bg'] = 'gray'
+    def pressedDeal(self):  # 수정 o
+        # self.deal 초기화
+        for i in range(3):
+            self.deal[i] = False
 
-    def pressedDeal(self):      # 수정 o
         if self.deckN == 0:
             self.init_deal()
-        else:
-            self.nCardsMiddle += 1
-            self.hitMiddle(self.nCardsMiddle)
-        PlaySound('../sounds/ding.wav', SND_FILENAME)
+        elif self.deckN == 4:
+            for i in range(1, 3 + 1):
+                self.hitPlayer1(i)
+                self.hitPlayer2(i)
+                self.hitPlayer3(i)
+                self.hitDealer(i)
+        elif self.deckN == 16:
+            self.hitPlayer1(4)
+            self.hitPlayer2(4)
+            self.hitPlayer3(4)
+            self.hitDealer(4)
+            self.checkWinner()
+
+        # PlaySound('../sounds/ding.wav', SND_FILENAME)
+
+        self.Deal["state"] = "disabled"
+        self.Deal["bg"] = "gray"
 
     def pressedAgain(self):      # 수정 o
         for i in range(2):
@@ -348,116 +346,33 @@ class Dori:
         self.Again['bg'] = 'gray'
 
     def checkWinner(self):
-        pedigree = {'top': 0, 'one pair': 1, 'two pair': 2, 'triple': 3, 'strait': 4, 'back strait': 5,
-                    'mountain': 6, 'flush': 7, 'full house': 8, 'four card': 9, 'strait flush': 10,
-                    'back strait flush': 11, 'royal strait flush': 12}
+        # check winner
+        for i in range(3):
+            self.player[i].made()
+        self.dealer.made()
 
-        # 뒤집힌 카드를 다시 그린다.
-        for i in range(2):
-            p = PhotoImage(file="../cards/" + self.dealer.cards[i].filename())
-            self.LcardsDealer[i].configure(image=p)  # 이미지 레퍼런스 변경
-            self.LcardsDealer[i].image = p  # 파이썬은 라벨 이미지 레퍼런스를 갖고 있어야 이미지가 보임
+        # 버튼 비활성화
+        self.LtotalMoney.configure(text=str(self.totalMoney)+"만")
+        self.P1Bet5['state'] = 'disabled'
+        self.P1Bet5['bg'] = 'gray'
+        self.P1Bet1['state'] = 'disabled'
+        self.P1Bet1['bg'] = 'gray'
 
-        self.player.cards += self.middle.cards
-        self.dealer.cards += self.middle.cards
+        self.P2Bet5['state'] = 'disabled'
+        self.P2Bet5['bg'] = 'gray'
+        self.P2Bet1['state'] = 'disabled'
+        self.P2Bet1['bg'] = 'gray'
 
-        player_ped = self.player.highMade()     # 족보 + top
-        dealer_ped = self.dealer.highMade()
+        self.P3Bet5['state'] = 'disabled'
+        self.P3Bet5['bg'] = 'gray'
+        self.P3Bet1['state'] = 'disabled'
+        self.P3Bet1['bg'] = 'gray'
 
-        playerhigh = pedigree[player_ped[0]]    # 족보 int
-        dealerhigh = pedigree[dealer_ped[0]]    # 족보 int
-
-        # dictionary 만들어서 족보별 우선순위 만들기
-        print(playerhigh, dealerhigh)
-
-        if playerhigh == dealerhigh:
-            if playerhigh == 8 or playerhigh == 2:  # top 두번 비교
-                if player_ped[1] == dealer_ped[1]:
-                    if player_ped[2] == dealer_ped[2]:
-                        self.push()
-                    elif player_ped[2] > dealer_ped[2]:
-                        self.win()
-                    else:
-                        self.lose()
-                elif player_ped[1] == 1:
-                    self.win()
-                elif dealer_ped[1] == 1:
-                    self.lose()
-                elif player_ped[1] > dealer_ped[1]:
-                    self.win()
-                else:
-                    self.lose()
-            else:                                           # top 한번 비교
-                if player_ped[1] == dealer_ped[1]:
-                    self.push()
-                elif player_ped[1] == 1:
-                    self.win()
-                elif dealer_ped[1] == 1:
-                    self.lose()
-                elif player_ped[1] > dealer_ped[1]:
-                    self.win()
-                else:
-                    self.lose()
-        elif playerhigh > dealerhigh:
-            self.win()
-        elif playerhigh < dealerhigh:
-            self.lose()
-
-        if playerhigh == 11 or playerhigh == 12 or playerhigh == 5 or playerhigh == 6:
-            self.LplayerMade.configure(text=player_ped[0])
-        else:
-            temp = ' '
-            if player_ped[1] == 11:
-                temp = 'J '
-                self.LplayerMade.configure(text=temp+player_ped[0])
-            elif player_ped[1] == 12:
-                temp = 'Q '
-                self.LplayerMade.configure(text=temp+player_ped[0])
-            elif player_ped[1] == 13:
-                temp = 'K '
-                self.LplayerMade.configure(text=temp+player_ped[0])
-            elif player_ped[1] == 1:
-                temp = 'Ace '
-                self.LplayerMade.configure(text=temp+player_ped[0])
-            else:
-                self.LplayerMade.configure(text=str(player_ped[1])+temp+player_ped[0])
-
-        if dealerhigh == 11 or dealerhigh == 12 or dealerhigh == 5 or dealerhigh == 6:
-            self.LdealerMade.configure(text=dealer_ped[0])
-        else:
-            temp = ' '
-            if dealer_ped[1] == 11:
-                temp = 'J '
-                self.LdealerMade.configure(text=temp+dealer_ped[0])
-            elif dealer_ped[1] == 12:
-                temp = 'Q '
-                self.LdealerMade.configure(text=temp+dealer_ped[0])
-            elif dealer_ped[1] == 13:
-                temp = 'K '
-                self.LdealerMade.configure(text=temp+dealer_ped[0])
-            elif dealer_ped[1] == 1:
-                temp = 'Ace '
-                self.LdealerMade.configure(text=temp+dealer_ped[0])
-            else:
-                self.LdealerMade.configure(text=str(dealer_ped[1])+temp+dealer_ped[0])
-
-        self.betMoney = 0
-        self.LplayerMoney.configure(text="You have $" + str(self.playerMoney))
-        self.LbetMoney.configure(text="$" + str(self.betMoney))
-        self.Check['state'] = 'disabled'
-        self.Check['bg'] = 'gray'
-        self.Bx1['state'] = 'disabled'
-        self.Bx1['bg'] = 'gray'
-        self.Bx2['state'] = 'disabled'
-        self.Bx2['bg'] = 'gray'
-
-        self.Deal['state'] = 'disabled'
-        self.Deal['bg'] = 'gray'
         self.Again['state'] = 'active'
         self.Again['bg'] = 'white'
 
     def win(self):
-        self.playerMoney += self.betMoney * 2
+        self.totalMoney += self.betMoney * 2
         self.Lstatus.configure(text="Win")
         PlaySound('../sounds/win.wav', SND_FILENAME)
 
@@ -465,9 +380,5 @@ class Dori:
         self.Lstatus.configure(text="Lose")
         PlaySound('../sounds/wrong.wav', SND_FILENAME)
 
-    def push(self):
-        self.playerMoney += self.betMoney
-        self.Lstatus.configure(text="Push")
-        PlaySound('../sounds/win.wav', SND_FILENAME)
 
 Dori()
