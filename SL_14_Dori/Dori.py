@@ -311,45 +311,106 @@ class Dori:
         self.Deal["bg"] = "gray"
 
     def pressedAgain(self):      # 수정 o
-        for i in range(2):
-            self.LcardsDealer[i].destroy()
-            self.LcardsPlayer[i].destroy()
-
         for i in range(5):
-            self.LcardsMiddle[i].destroy()
+            self.LcardsDealer[i].destroy()
+            for j in range(3):
+                self.LcardsPlayer[j][i].destroy()
 
         self.LcardsDealer.clear()
-        self.LcardsPlayer.clear()
-        self.LcardsMiddle.clear()
+        self.LcardsPlayer = [[], [], []]
 
-        self.player.reset()
+        for i in range(3):
+            self.player[i].reset()
+            self.playerbetMoney[i] = 0
+            self.LplayerbetMoney[i].configure(text=str(self.playerbetMoney[i])+"만")
         self.dealer.reset()
-        self.middle.reset()
+
         self.deckN = 0
-        self.nCardsDealer = 0
-        self.nCardsPlayer = 0
-        self.nCardsMiddle = 0
-        self.betMoney = 10
-        self.playerMoney -= 10
-        self.LplayerMoney.configure(text="You have $" + str(self.playerMoney))
-        self.LbetMoney.configure(text="$" + str(self.betMoney))
-        self.Lstatus.configure(text="")
-        self.LplayerMade.configure(text="")
-        self.LdealerMade.configure(text="")
-        self.Check['state'] = 'active'
-        self.Check['bg'] = 'white'
-        self.Bx1['state'] = 'active'
-        self.Bx1['bg'] = 'white'
-        self.Bx2['state'] = 'active'
-        self.Bx2['bg'] = 'white'
+
+        for i in range(5):
+            self.Lplayer1Num[i].configure(text="", fg='white')
+            self.Lplayer2Num[i].configure(text="", fg='white')
+            self.Lplayer3Num[i].configure(text="", fg='white')
+            self.LdealerNum[i].configure(text="", fg='white')
+
+        for i in range(3):
+            self.Lplayerstatus[i].configure(text='')
+            self.LplayerMade[i].configure(text='')
+            self.LdealerMade.configure(text='')
+
+        # self.deal 초기화
+        for i in range(3):
+            self.deal[i] = False
+
+        # 버튼 초기화
+        self.P1Bet5['state'] = 'active'
+        self.P1Bet5['bg'] = 'white'
+
+        self.P1Bet1['state'] = 'active'
+        self.P1Bet1['bg'] = 'white'
+
+        self.P2Bet5['state'] = 'active'
+        self.P2Bet5['bg'] = 'white'
+        self.P2Bet1['state'] = 'active'
+        self.P2Bet1['bg'] = 'white'
+
+        self.P3Bet5['state'] = 'active'
+        self.P3Bet5['bg'] = 'white'
+        self.P3Bet1['state'] = 'active'
+        self.P3Bet1['bg'] = 'white'
+
+        self.Deal['state'] = 'disabled'
+        self.Deal['bg'] = 'gray'
+
         self.Again['state'] = 'disabled'
         self.Again['bg'] = 'gray'
 
     def checkWinner(self):
         # check winner
+        n = [False, False, False]
+        w = [False, False, False]
+        check_list = [self.dealer.made()]
         for i in range(3):
-            self.player[i].made()
-        self.dealer.made()
+            check_list.append(self.player[i].made())
+
+        print(check_list)
+
+        if check_list[0][0] == -1:      # dealer no made
+            self.LdealerMade.configure(text=check_list[0][1])
+        else:
+            self.LdealerMade.configure(text=check_list[0][1])
+            for i in check_list[0][2]:
+                self.LdealerNum[i].configure(fg='yellow')
+                self.LcardsDealer[i].place(y=120)
+
+        for i in range(1, 3 + 1):
+            if check_list[i][0] == -1:
+                self.LplayerMade[i-1].configure(text=check_list[i][1])
+                self.Lplayerstatus[i - 1].configure(text="패")
+                n[i-1] = False
+            else:
+                n[i-1] = True
+                if check_list[0][0] >= check_list[i][0]:    # 패
+                    self.LplayerMade[i-1].configure(text=check_list[i][1])
+                    self.Lplayerstatus[i-1].configure(text="패")
+                else:   # 승
+                    self.LplayerMade[i - 1].configure(text=check_list[i][1])
+                    self.Lplayerstatus[i - 1].configure(text="승")
+                    w[i-1] = True
+                    self.totalMoney += self.playerbetMoney[i-1] * 2
+
+        if n[0]:
+            for i in check_list[1][2]:
+                self.Lplayer1Num[i].configure(fg='yellow')
+                self.LcardsPlayer[0][i].place(y=370)
+        if n[1]:
+            for i in check_list[2][2]:
+                self.Lplayer2Num[i].configure(fg='yellow')
+                self.LcardsPlayer[1][i].place(y=370)
+        if n[2]:
+            for i in check_list[3][2]:
+                self.Lplayer3Num[i].configure(fg='yellow')
+                self.LcardsPlayer[2][i].place(y=370)
 
         # 버튼 비활성화
         self.LtotalMoney.configure(text=str(self.totalMoney)+"만")
@@ -371,14 +432,10 @@ class Dori:
         self.Again['state'] = 'active'
         self.Again['bg'] = 'white'
 
-    def win(self):
-        self.totalMoney += self.betMoney * 2
-        self.Lstatus.configure(text="Win")
-        PlaySound('../sounds/win.wav', SND_FILENAME)
-
-    def lose(self):
-        self.Lstatus.configure(text="Lose")
-        PlaySound('../sounds/wrong.wav', SND_FILENAME)
+        # if True in w:
+        #     PlaySound('../sounds/win.wav', SND_FILENAME)
+        # else:
+        #     PlaySound('../sounds/wrong.wav', SND_FILENAME)
 
 
 Dori()
