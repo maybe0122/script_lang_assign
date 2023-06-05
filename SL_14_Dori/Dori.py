@@ -301,9 +301,9 @@ class Dori:
             self.hitDealer(4)
             PlaySound('../sounds/cardFlip1.wav', SND_FILENAME)
 
-            self.checkWinner()
+            PlaySound('../sounds/ding.wav', SND_FILENAME)
 
-        PlaySound('../sounds/ding.wav', SND_FILENAME)
+            self.checkWinner()
 
         self.Deal["state"] = "disabled"
         self.Deal["bg"] = "gray"
