@@ -120,7 +120,7 @@ class Dori:
             self.LplayerbetMoney[0].configure(text=str(self.playerbetMoney[0])+"만")
             self.totalMoney -= temp
             self.LtotalMoney.configure(text=str(self.totalMoney) + "만")
-            # PlaySound('../sounds/chip.wav', SND_FILENAME)
+            PlaySound('../sounds/chip.wav', SND_FILENAME)
         else:
             self.playerbetMoney[0] -= temp
 
@@ -135,7 +135,7 @@ class Dori:
             self.LplayerbetMoney[0].configure(text=str(self.playerbetMoney[0]) + "만")
             self.totalMoney -= temp
             self.LtotalMoney.configure(text=str(self.totalMoney) + "만")
-            # PlaySound('../sounds/chip.wav', SND_FILENAME)
+            PlaySound('../sounds/chip.wav', SND_FILENAME)
         else:
             self.playerbetMoney[0] -= temp
 
@@ -150,7 +150,7 @@ class Dori:
             self.LplayerbetMoney[1].configure(text=str(self.playerbetMoney[1]) + "만")
             self.totalMoney -= temp
             self.LtotalMoney.configure(text=str(self.totalMoney) + "만")
-            # PlaySound('../sounds/chip.wav', SND_FILENAME)
+            PlaySound('../sounds/chip.wav', SND_FILENAME)
         else:
             self.playerbetMoney[1] -= temp
 
@@ -165,7 +165,7 @@ class Dori:
             self.LplayerbetMoney[1].configure(text=str(self.playerbetMoney[1]) + "만")
             self.totalMoney -= temp
             self.LtotalMoney.configure(text=str(self.totalMoney) + "만")
-            # PlaySound('../sounds/chip.wav', SND_FILENAME)
+            PlaySound('../sounds/chip.wav', SND_FILENAME)
         else:
             self.playerbetMoney[1] -= temp
 
@@ -180,7 +180,7 @@ class Dori:
             self.LplayerbetMoney[2].configure(text=str(self.playerbetMoney[2]) + "만")
             self.totalMoney -= temp
             self.LtotalMoney.configure(text=str(self.totalMoney) + "만")
-            # PlaySound('../sounds/chip.wav', SND_FILENAME)
+            PlaySound('../sounds/chip.wav', SND_FILENAME)
         else:
             self.playerbetMoney[2] -= temp
 
@@ -195,7 +195,7 @@ class Dori:
             self.LplayerbetMoney[2].configure(text=str(self.playerbetMoney[2]) + "만")
             self.totalMoney -= temp
             self.LtotalMoney.configure(text=str(self.totalMoney) + "만")
-            # PlaySound('../sounds/chip.wav', SND_FILENAME)
+            PlaySound('../sounds/chip.wav', SND_FILENAME)
         else:
             self.playerbetMoney[2] -= temp
 
@@ -232,8 +232,6 @@ class Dori:
 
         self.Lplayer1Num[n].configure(text=str(newCard.month))
 
-        # PlaySound('../sounds/cardFlip1.wav', SND_FILENAME)
-
     def hitPlayer2(self, n):
         newCard = Card(self.cardDeck[self.deckN])
         self.deckN += 1
@@ -248,8 +246,6 @@ class Dori:
 
         self.Lplayer2Num[n].configure(text=str(newCard.month))
 
-        # PlaySound('../sounds/cardFlip1.wav', SND_FILENAME)
-
     def hitPlayer3(self, n):
         newCard = Card(self.cardDeck[self.deckN])
         self.deckN += 1
@@ -263,8 +259,6 @@ class Dori:
         self.LcardsPlayer[2][self.player[2].inHand() - 1].place(x=450 + n * 30, y=350)
 
         self.Lplayer3Num[n].configure(text=str(newCard.month))
-
-        # PlaySound('../sounds/cardFlip1.wav', SND_FILENAME)
 
     def hitDealer(self, n):                 # 수정 o
         newCard = Card(self.cardDeck[self.deckN])
@@ -283,8 +277,6 @@ class Dori:
 
         self.LdealerNum[n].configure(text=str(newCard.month))
 
-        # PlaySound('../sounds/cardFlip1.wav', SND_FILENAME)
-
     def pressedDeal(self):  # 수정 o
         # self.deal 초기화
         for i in range(3):
@@ -292,20 +284,26 @@ class Dori:
 
         if self.deckN == 0:
             self.init_deal()
+            PlaySound('../sounds/cardFlip1.wav', SND_FILENAME)
+
         elif self.deckN == 4:
             for i in range(1, 3 + 1):
                 self.hitPlayer1(i)
                 self.hitPlayer2(i)
                 self.hitPlayer3(i)
                 self.hitDealer(i)
+                PlaySound('../sounds/cardFlip1.wav', SND_FILENAME)
+
         elif self.deckN == 16:
             self.hitPlayer1(4)
             self.hitPlayer2(4)
             self.hitPlayer3(4)
             self.hitDealer(4)
+            PlaySound('../sounds/cardFlip1.wav', SND_FILENAME)
+
             self.checkWinner()
 
-        # PlaySound('../sounds/ding.wav', SND_FILENAME)
+        PlaySound('../sounds/ding.wav', SND_FILENAME)
 
         self.Deal["state"] = "disabled"
         self.Deal["bg"] = "gray"
@@ -432,10 +430,10 @@ class Dori:
         self.Again['state'] = 'active'
         self.Again['bg'] = 'white'
 
-        # if True in w:
-        #     PlaySound('../sounds/win.wav', SND_FILENAME)
-        # else:
-        #     PlaySound('../sounds/wrong.wav', SND_FILENAME)
+        if True in w:
+            PlaySound('../sounds/win.wav', SND_FILENAME)
+        else:
+            PlaySound('../sounds/wrong.wav', SND_FILENAME)
 
 
 Dori()
